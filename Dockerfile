@@ -30,6 +30,8 @@ COPY --from=builder /app/public            ./public
 COPY --from=builder /app/.next             ./.next
 COPY --from=builder /app/node_modules      ./node_modules
 COPY --from=builder /app/package.json      ./package.json
+COPY --from=builder /app/src               ./src
+COPY --from=builder /app/tsconfig.json     ./tsconfig.json
 
 # Persistent directories — both declared as volumes in docker-compose
 RUN mkdir -p /app/data /app/media \
@@ -40,4 +42,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "node_modules/.bin/payload migrate && npm start"]
