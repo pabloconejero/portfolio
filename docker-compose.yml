@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     # Bind only to localhost — nginx on the host proxies into this port
     ports:
-      - "127.0.0.1:3000:3000"
+      - "${APP_HOST_PORT:-127.0.0.1:3000}:3000"
     volumes:
       - db_data:/app/data
       - media_data:/app/media
