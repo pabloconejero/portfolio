@@ -184,7 +184,7 @@ export interface Media {
 export interface Skill {
   id: number;
   name: string;
-  category: 'languages' | 'frontend' | 'backend';
+  category: 'ecommerce' | 'frontend' | 'backend' | 'devops' | 'other';
   /**
    * Featured skills are highlighted with the accent color
    */

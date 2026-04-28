@@ -378,6 +378,8 @@ section + section {
   display: flex;
   gap: 10px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 .project-link {
   width: 32px;

@@ -3,12 +3,14 @@ import { getPayload } from 'payload'
 import type { Skill } from '@/payload-types'
 
 const CATEGORY_LABELS: Record<Skill['category'], string> = {
-  languages: 'Languages',
+  ecommerce: 'Ecommerce',
   frontend: 'Frontend',
-  backend: 'Backend & Cloud',
+  backend: 'Backend',
+  devops: 'DevOps',
+  other: 'Other',
 }
 
-const CATEGORY_ORDER: Skill['category'][] = ['languages', 'frontend', 'backend']
+const CATEGORY_ORDER: Skill['category'][] = ['ecommerce', 'frontend', 'backend', 'devops', 'other']
 
 export default async function Skills() {
   const payload = await getPayload({ config })
