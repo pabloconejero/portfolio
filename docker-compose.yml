@@ -1,43 +1,37 @@
-version: '3'
-
 services:
-  payload:
-    image: node:20-alpine
+  app:
+    build: .
+    restart: unless-stopped
+    # Bind only to localhost — nginx on the host proxies into this port
     ports:
-      - '3000:3000'
+      - "127.0.0.1:3000:3000"
     volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    working_dir: /home/node/app/
-    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm install && pnpm dev"
+      - db_data:/app/data
+      - media_data:/app/media
+    environment:
+      DATABASE_URL: file:/app/data/portfolio.db
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      MEDIA_DIR: /app/media
+      # Email
+      SMTP_HOST: smtp
+      SMTP_PORT: 25
+      SMTP_FROM: ${SMTP_FROM}
+      CONTACT_EMAIL: ${CONTACT_EMAIL}
     depends_on:
-      - mongo
-      # - postgres
-    env_file:
-      - .env
+      - smtp
 
-  # Ensure your DATABASE_URL uses 'mongo' as the hostname ie. mongodb://mongo/my-db-name
-  mongo:
-    image: mongo:latest
-    ports:
-      - '27017:27017'
-    command:
-      - --storageEngine=wiredTiger
-    volumes:
-      - data:/data/db
-    logging:
-      driver: none
-
-  # Uncomment the following to use postgres
-  # postgres:
-  #   restart: always
-  #   image: postgres:latest
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
+  smtp:
+    image: boky/postfix
+    restart: unless-stopped
+    # Not exposed on the host — only reachable from within the compose network
+    environment:
+      ALLOWED_SENDER_DOMAINS: ${SMTP_DOMAIN}
+      # Uncomment to relay through an external provider (Gmail, Brevo, etc.)
+      # instead of sending directly from the VPS IP
+      # RELAYHOST: "[smtp.gmail.com]:587"
+      # RELAYHOST_USERNAME: ${SMTP_RELAY_USER}
+      # RELAYHOST_PASSWORD: ${SMTP_RELAY_PASSWORD}
 
 volumes:
-  data:
-  # pgdata:
-  node_modules:
+  db_data:
+  media_data:
