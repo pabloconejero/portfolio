@@ -21,9 +21,11 @@ export const Skills: CollectionConfig = {
       type: 'select',
       required: true,
       options: [
-        { label: 'Languages', value: 'languages' },
+        { label: 'Ecommerce', value: 'ecommerce' },
         { label: 'Frontend', value: 'frontend' },
-        { label: 'Backend & Cloud', value: 'backend' },
+        { label: 'Backend', value: 'backend' },
+        { label: 'DevOps', value: 'devops' },
+        { label: 'Other', value: 'other' },
       ],
     },
     {
