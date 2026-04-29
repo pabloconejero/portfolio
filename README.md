@@ -1,67 +1,108 @@
-# Payload Blank Template
+# Portfolio v2
 
-This template comes configured with the bare minimum to get started on anything you need.
+A personal portfolio website powered by **Next.js 16** and **Payload CMS 3** — fully self-hostable, no third-party services required.
 
-## Quick start
+Content is managed through a built-in admin panel (Payload), served as a static-first Next.js frontend, and deployed via Docker with a lightweight Postfix SMTP container for contact form emails.
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+## Features
 
-## Quick Start - local setup
+- **CMS-driven content** — edit projects, experience, skills, and about sections without touching code
+- **Self-hosted** — runs entirely on a VPS behind Nginx; no external database or cloud storage needed
+- **SQLite** — zero-config database, data persisted via Docker volumes
+- **Contact form** — submissions stored in the CMS and forwarded by email via Postfix
+- **i18n ready** — all user-facing strings go through translation keys
+- **Performance-first** — force-dynamic pages, Sharp image processing, scroll-reveal animations
 
-To spin up this template locally, follow these steps:
+## Tech stack
 
-### Clone
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| CMS | Payload CMS 3 |
+| Database | SQLite (via `@payloadcms/db-sqlite`) |
+| Styling | CSS (component-scoped) |
+| Email | Nodemailer + Postfix (self-hosted) |
+| Deployment | Docker Compose + Nginx reverse proxy |
+| Testing | Vitest (integration) · Playwright (e2e) |
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+## Sections
 
-### Development
+- **Hero** — headline and call-to-action
+- **About** — bio and background
+- **Skills** — categorized tech skills (Ecommerce, Frontend, Backend, DevOps, Other)
+- **Projects** — portfolio pieces with links
+- **Experience** — work history timeline
+- **Contact** — form that emails you and saves submissions to the CMS
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+## Getting started
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+### Prerequisites
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+- Node.js `^18.20.2` or `>=20.9.0`
+- pnpm `^9` or `^10`
 
-#### Docker (Optional)
+### Local development
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+```bash
+git clone https://github.com/YOUR_USERNAME/portfolio-v2.git
+cd portfolio-v2
 
-To do so, follow these steps:
+cp .env.example .env        # fill in PAYLOAD_SECRET at minimum
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+pnpm install
+pnpm dev
+```
 
-## How it works
+Open [http://localhost:3000](http://localhost:3000) and [http://localhost:3000/admin](http://localhost:3000/admin) to create your first admin user.
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+### Docker (recommended for production parity)
 
-### Collections
+```bash
+cp .env.example .env        # set PAYLOAD_SECRET
+docker compose up -d
+```
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+The app binds to `127.0.0.1:3000` by default. Point Nginx at that port and add your SSL certificate.
 
-- #### Users (Authentication)
+## Environment variables
 
-  Users are auth-enabled collections that have access to the admin panel.
+| Variable | Description | Default |
+|---|---|---|
+| `PAYLOAD_SECRET` | Secret key for Payload (required) | — |
+| `DATABASE_URL` | SQLite file path | `file:./portfolio-v2.db` |
+| `SMTP_HOST` | SMTP server host | `smtp` |
+| `SMTP_PORT` | SMTP server port | `25` |
+| `SMTP_FROM` | Sender display name | `noreply@localhost` |
+| `CONTACT_EMAIL` | Address that receives contact form emails | — |
+| `APP_HOST_PORT` | Host binding for Docker | `127.0.0.1:3000` |
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+## Project structure
 
-- #### Media
+```
+src/
+├── app/
+│   ├── (frontend)/     # Public-facing Next.js pages
+│   └── (payload)/      # Payload admin panel
+├── collections/        # CMS collections (Projects, Experience, Skills, …)
+├── globals/            # CMS globals (Hero, About, SiteSettings)
+├── components/         # Reusable UI components
+├── hooks/              # Custom React hooks
+└── i18n/               # Translation files
+```
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+## Scripts
 
-### Docker
+```bash
+pnpm dev                  # Start dev server
+pnpm build                # Production build
+pnpm start                # Serve production build
+pnpm lint                 # ESLint
+pnpm test                 # Run all tests (integration + e2e)
+pnpm test:int             # Vitest integration tests
+pnpm test:e2e             # Playwright e2e tests
+pnpm generate:types       # Regenerate Payload TypeScript types
+```
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+## License
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+MIT
